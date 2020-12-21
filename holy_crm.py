@@ -1,30 +1,136 @@
+import argparse
 import pandas as pd
+import time
+import logging
+import os
+from datetime import datetime
+from pprint import pformat
+
+from holy_crm.email_handler import EmailHandler
+from holy_crm.content_generator import ContentGenerator
+from holy_crm.config import Config
+#from holy_crm.customer_selector import CustomerSelector
+
+xlsx_input_filename = 'data/List_temp_excel_2007.xlsx'
+xlsx_output_filename = 'data/output.xlsx'
+
+# init logging
+if os.name == 'posix':
+    # coloring on linux
+    CYELLOW = '\033[93m'
+    CBLUE = '\033[94m'
+    COFF = '\033[0m'
+    LOG_FORMAT = '[' + CBLUE + '%(asctime)s' + COFF + '|' + CBLUE + '%(filename)-18s' + COFF + \
+             '|' + CYELLOW + '%(levelname)-8s' + COFF + ']: %(message)s'
+else:
+    # else without color
+    LOG_FORMAT = '[%(asctime)s|%(filename)-18s|%(levelname)-8s]: %(message)s'
+
+logging.basicConfig(
+    format=LOG_FORMAT,
+    datefmt='%Y/%m/%d %H:%M:%S',
+    level=logging.INFO)
+
+__log__ = logging.getLogger('holy_crm')
+
+def launch_holy_crm(config):
+    df = import_data_to_df(xlsx_input_filename)
+    customer_list = convert_df_to_dict(df)
+    # Preselect customer
+    selected_people = select_record(customer_list)
+    # Initialize email handler
+    email_handler = EmailHandler(config)
+    for customer in selected_people:
+        __log__.info(f"Processing Customer {customer['id']}")
+        __log__.debug(f"Preparing E-Mail content based on data {customer} ")
+        content_generator = ContentGenerator(customer)
+        customer_email_data = content_generator.get_email_data()
+        # Prepare email
+        __log__.info(f"Need info! Send this E-Mail? (y/n)")
+        send = input("")
+        if send == "y":
+            # Send E-Mail
+            __log__.info("Sending E-Mail")
+            email_handler.send_email(customer_email_data)
+            # Document
+            __log__.info(f"Updating customer {customer['id']} in Excel")
+            df = update_contact(customer['id'], df)
+            #print("Sleep 10 seconds.")
+            #time.sleep(10)
+        else:
+            __log__.info(f"Skipping Customer {customer['id']}")
+        __log__.info(f"Customer {customer['id']} complete\n")
+    # Export df
+    __log__.info(F"Exporting {xlsx_output_filename} as result")
+    df.to_excel(xlsx_output_filename, index=False)
 
 def main():
-    df = pd.read_excel('List_temp_excel_2007.xlsx', index_col=0)
-    # Fill nan to 'nan'
-    df = df.fillna('nan')
-    data_dict = df.to_dict('records')
-    selected_people = select_record(data_dict)
-    fill_template(selected_people)
+    print("""
+| |__   ___ | |_   _        ___ _ __ _ __ ___  
+| '_ \ / _ \| | | | |_____ / __| '__| '_ ` _ \ 
+| | | | (_) | | |_| |_____| (__| |  | | | | | |
+|_| |_|\___/|_|\__, |      \___|_|  |_| |_| |_|
+               |___/                      alpha
+        """)
+
+    parser = argparse.ArgumentParser(description=\
+             "Customer relationship mailer", epilog="Designed by dnberlin")
+    parser.add_argument('--config', '-c',
+                        type=argparse.FileType('r', encoding='UTF-8'),
+                        default='%s/config.yaml' % os.path.dirname(os.path.abspath(__file__)),
+                        help="Config file to use. If not set, try to use '%s/config.yaml' " %
+                        os.path.dirname(os.path.abspath(__file__))
+                        )
+    args = parser.parse_args()
+
+    # load config
+    config_handle = args.config
+    config = Config(config_handle.name)
+
+    # check config
+    if not config.get('mail', dict()).get('smtp_server') or not config.get('mail', dict()).get('smtp_port'):
+        __log__.error("No mailserver configured. Starting like this would be pointless...")
+        return
+    if not config.get('mail', dict()).get('user_email') or not config.get('mail', dict()).get('user_pw'):
+        __log__.error("No login for mailserver configured.")
+        return
+    if not config.get('mail', dict()).get('sender_name'):
+        __log__.error("No name of sender defined.")
+        return
+
+    # adjust log level, if required
+    if config.get('verbose'):
+        __log__.setLevel(logging.INFO)
+        __log__.debug("Settings from config %s", pformat(config))
+    
+    launch_holy_crm(config)
+
+def import_data_to_df(xlsx_filename):
+    __log__.debug(F"Importing {xlsx_filename} as datasource")
+    df = pd.read_excel(xlsx_filename)
+    # Fill nan to ''
+    df = df.fillna('')
+    return df
+
+def convert_df_to_dict(df):
+    return df.to_dict('records')
+
+def update_contact(id, df):
+    now = datetime.now()
+    #print("\n\n" + str(now))
+    df.at[id, 'last_contact'] = str(now)
+    #print(df.loc[id])
+    return df
     
 def select_record(data_dict):
     selection = []
     for record in data_dict:
-        if record['person_first_name'] != 'nan' and \
-           record['person_last_name'] != 'nan' and \
-           record['person_email_address'] != 'nan' and \
-           record['company_name'] != 'nan':
+        if record['person_first_name'] and \
+           record['person_last_name'] and \
+           record['person_email_address'] and \
+           record['company_name']:
             selection.append(record)
     return selection
-    
-def fill_template(data):
-    for record in data:
-        message = f"Hi {record['person_first_name'].strip()} {record['person_last_name'].strip()}. " \
-        f"You email is {record['person_email_address'].strip()}. " \
-        f"You work for {record['company_name'].strip()}."
-        
-        print(message + "\n\n")
-            
+
 if __name__ == '__main__':
     main()

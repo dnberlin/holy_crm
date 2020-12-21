@@ -1,2 +1,5 @@
 pandas>=1.1.5
 xlrd==1.2.0
+#openpyxl
+wheel
+PyYAML==5.3.1
