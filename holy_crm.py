@@ -1,18 +1,14 @@
 import argparse
-import pandas as pd
 import time
 import logging
 import os
-from datetime import datetime
 from pprint import pformat
 
+from holy_crm.config import Config
+from holy_crm.data_handler import DataHandler
 from holy_crm.email_handler import EmailHandler
 from holy_crm.content_generator import ContentGenerator
-from holy_crm.config import Config
 #from holy_crm.customer_selector import CustomerSelector
-
-xlsx_input_filename = 'data/List_temp_excel_2007.xlsx'
-xlsx_output_filename = 'data/output.xlsx'
 
 # init logging
 if os.name == 'posix':
@@ -34,15 +30,18 @@ logging.basicConfig(
 __log__ = logging.getLogger('holy_crm')
 
 def launch_holy_crm(config):
-    df = import_data_to_df(xlsx_input_filename)
-    customer_list = convert_df_to_dict(df)
+    # Initialize data_handler
+    data_handler = DataHandler(config)
+    # Import data
+    customer_dict = data_handler.get_dict_data()
     # Preselect customer
-    selected_people = select_record(customer_list)
-    # Initialize email handler
+    selected_people = select_record(customer_dict)
+    # Initialize email_handler
     email_handler = EmailHandler(config)
     for customer in selected_people:
         __log__.info(f"Processing Customer {customer['id']}")
         __log__.debug(f"Preparing E-Mail content based on data {customer} ")
+        # Initialize content_generator for customer
         content_generator = ContentGenerator(customer)
         customer_email_data = content_generator.get_email_data()
         # Prepare email
@@ -52,17 +51,14 @@ def launch_holy_crm(config):
             # Send E-Mail
             __log__.info("Sending E-Mail")
             email_handler.send_email(customer_email_data)
-            # Document
+            # Update customer timestamp
             __log__.info(f"Updating customer {customer['id']} in Excel")
-            df = update_contact(customer['id'], df)
-            #print("Sleep 10 seconds.")
-            #time.sleep(10)
+            data_handler.update_entry(customer['id'])
         else:
             __log__.info(f"Skipping Customer {customer['id']}")
         __log__.info(f"Customer {customer['id']} complete\n")
-    # Export df
-    __log__.info(F"Exporting {xlsx_output_filename} as result")
-    df.to_excel(xlsx_output_filename, index=False)
+    __log__.info(F"SAving data")
+    data_handler.save_data()
 
 def main():
     print("""
@@ -100,28 +96,11 @@ def main():
 
     # adjust log level, if required
     if config.get('verbose'):
-        __log__.setLevel(logging.INFO)
+        __log__.setLevel(logging.DEBUG)
         __log__.debug("Settings from config %s", pformat(config))
     
     launch_holy_crm(config)
-
-def import_data_to_df(xlsx_filename):
-    __log__.debug(F"Importing {xlsx_filename} as datasource")
-    df = pd.read_excel(xlsx_filename)
-    # Fill nan to ''
-    df = df.fillna('')
-    return df
-
-def convert_df_to_dict(df):
-    return df.to_dict('records')
-
-def update_contact(id, df):
-    now = datetime.now()
-    #print("\n\n" + str(now))
-    df.at[id, 'last_contact'] = str(now)
-    #print(df.loc[id])
-    return df
-    
+  
 def select_record(data_dict):
     selection = []
     for record in data_dict:

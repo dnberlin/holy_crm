@@ -27,7 +27,6 @@ class EmailHandler:
 		print(f"Recipient address: {data['recipient_email']}")
 		print(f"Subject: {data['subject']}")
 		print(f"Body: {data['body']}")
-		# ...
 
 		msg = MIMEMultipart()
 		msg['Subject'] = data['subject']
