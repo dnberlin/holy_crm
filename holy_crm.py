@@ -8,7 +8,7 @@ from holy_crm.config import Config
 from holy_crm.data_handler import DataHandler
 from holy_crm.email_handler import EmailHandler
 from holy_crm.content_generator import ContentGenerator
-#from holy_crm.customer_selector import CustomerSelector
+from holy_crm.customer_selector import CustomerSelector
 
 # init logging
 if os.name == 'posix':
@@ -30,15 +30,23 @@ logging.basicConfig(
 __log__ = logging.getLogger('holy_crm')
 
 def launch_holy_crm(config):
-    # Initialize data_handler
+    # Initializing handler
+    __log__.debug('Initializing handler')
     data_handler = DataHandler(config)
-    # Import data
-    customer_dict = data_handler.get_dict_data()
-    # Preselect customer
-    selected_people = select_record(customer_dict)
-    # Initialize email_handler
     email_handler = EmailHandler(config)
-    for customer in selected_people:
+    customer_selector = CustomerSelector(config, data_handler.get_dict_data())
+
+    # Preselect customer
+    if config.get('criteria') is not None:
+        __log__.info('Selecting customer using criteria')
+        criteria = config.get('criteria', dict())
+    else:
+        __log__.info('No cirteria defined. Using all customer.')
+        criteria = []
+    selected_customer = customer_selector.select_customer(criteria)
+    
+    # Process customer
+    for customer in selected_customer:
         __log__.info(f"Processing Customer {customer['id']}")
         __log__.debug(f"Preparing E-Mail content based on data {customer} ")
         # Initialize content_generator for customer
@@ -49,15 +57,12 @@ def launch_holy_crm(config):
         send = input("")
         if send == "y":
             # Send E-Mail
-            __log__.info("Sending E-Mail")
-            email_handler.send_email(customer_email_data)
+            #email_handler.send_email(customer_email_data)
             # Update customer timestamp
-            __log__.info(f"Updating customer {customer['id']} in Excel")
             data_handler.update_entry(customer['id'])
         else:
             __log__.info(f"Skipping Customer {customer['id']}")
         __log__.info(f"Customer {customer['id']} complete\n")
-    __log__.info(F"SAving data")
     data_handler.save_data()
 
 def main():
@@ -100,16 +105,6 @@ def main():
         __log__.debug("Settings from config %s", pformat(config))
     
     launch_holy_crm(config)
-  
-def select_record(data_dict):
-    selection = []
-    for record in data_dict:
-        if record['person_first_name'] and \
-           record['person_last_name'] and \
-           record['person_email_address'] and \
-           record['company_name']:
-            selection.append(record)
-    return selection
 
 if __name__ == '__main__':
     main()

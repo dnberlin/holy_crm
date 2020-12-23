@@ -1,6 +1,6 @@
 import logging
 import pandas as pd
-from datetime import datetime
+from datetime import datetime,  timedelta
 
 class DataHandler:
     __data_path = "data"
@@ -23,15 +23,15 @@ class DataHandler:
 
     def update_entry(self, id):
         self.__log__.debug(F'Updating Customer {id}')
-        now = datetime.now()
+        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         self.__log__.debug("\n\n" + str(now))
-        self.df.at[id, 'last_contact'] = str(now)
-        self.__log__.debug(df.loc[id])
+        self.df.at[id, 'last_contact'] = now
+        self.__log__.debug(self.df.loc[id])
 
     def save_data(self):
         file = self.__data_path + "/" + self.__output_filename  
         self.__log__.info('Saving data')
-        self.df.to_excel(__output_filename, index=False)
+        self.df.to_excel(self.__output_filename, index=False)
 
     def __convert_df_to_dict(self, df):
         return df.to_dict('records')

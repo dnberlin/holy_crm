@@ -1,4 +1,8 @@
+import logging
+
 class ContentGenerator:
+
+    __log__ = logging.getLogger('holy-crm')
 
     def __init__(self, data):
         self.data = data
@@ -11,11 +15,13 @@ class ContentGenerator:
         #self.data['company'] = self.data['company'].replace('.',' ')
 
     def __generate_subject(self):
+        self.__log__.debug("Generating subject")
         return (f"Proposal for {self.data['person_first_name'].strip()} {self.data['person_last_name'].strip()} "\
                 f"at {self.data['company_name'].strip()}. "
                 )
 
     def __generate_body(self):
+        self.__log__.debug("Generating body")
         return f"Hi {self.__gender_helper()} {self.data['person_first_name'].strip()} {self.data['person_last_name'].strip()}. " \
         f"You email is {self.data['person_email_address'].strip()}. " \
         f"You work for {self.data['company_name'].strip()}."
@@ -55,6 +61,7 @@ class ContentGenerator:
         
         return output_file"""
     def get_email_data(self):
+        self.__log__.debug("Collecting email data")
         email_data = {}
         email_data['recipient_name'] = F"{self.data['person_first_name'].strip()} {self.data['person_last_name'].strip()}" 
         #if element['email_specific'] != None:
