@@ -1,7 +1,6 @@
 venv/*
 data/*
 config.yaml
-config.yaml.dist
 __pycache__/*
 holy_crm/__pycache__/*
 .git

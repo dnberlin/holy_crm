@@ -1,0 +1,43 @@
+---
+# Enable verbose mode (print DEBUG log messages) [true, false]
+verbose: false
+
+# local is only supported until now
+mode: local
+# input file shall be an excel document located in the data/ folder.
+input_filename: customer_list.xlsx
+
+# Enter your mailserver login inf
+# ovh
+#mail:
+#    smtp_server: ns0.ovh.net
+#    smtp_port: 5025
+#    user_email: max@mueller.name
+#    user_pw:
+#    sender_name: Max Mueller
+
+# gmail
+#mail:
+#    smtp_server: smtp.gmail.com
+#    smtp_port: 587
+#    user_email: maxmueller@gmail.com
+#    user_pw:
+#    sender_name: Max Mueller
+
+# If no criteria shall be used leave <criteria> empty.
+#criteria:
+# Otherwise you can define countries to select customers from.
+#criteria:
+#  country:
+#    - Germany
+#    - Spain
+#    - Australia
+
+criteria:
+  country:
+    - Germany
+
+# Between sending it waits for <sleeping_time> seconds.
+#loop:
+#    active: yes
+#    sleeping_time: 600
