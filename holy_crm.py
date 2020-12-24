@@ -37,13 +37,7 @@ def launch_holy_crm(config):
     customer_selector = CustomerSelector(config, data_handler.get_dict_data())
 
     # Preselect customer
-    if config.get('criteria') is not None:
-        __log__.info('Selecting customer using criteria')
-        criteria = config.get('criteria', dict())
-    else:
-        __log__.info('No cirteria defined. Using all customer.')
-        criteria = []
-    selected_customer = customer_selector.select_customer(criteria)
+    selected_customer = customer_selector.select_customer()
     
     # Process customer
     for customer in selected_customer:

@@ -9,10 +9,10 @@ class ContentGenerator:
         self.correct_dataset()
 
     def correct_dataset(self):
-        return
-        #self.data['company'] = self.data['company'].replace('&','und')
-        #self.data['company'] = self.data['company'].replace('/',' ')
-        #self.data['company'] = self.data['company'].replace('.',' ')
+        self.__log__.debug(F"Correcting record, deleting whitespaces...")
+        self.data['person_first_name'] = self.data['person_first_name'].strip()
+        self.data['person_last_name'] = self.data['person_last_name'].strip()
+        self.data['company_name'] = self.data['company_name'].strip()
 
     def __generate_subject(self):
         self.__log__.debug("Generating subject")
@@ -83,17 +83,6 @@ class ContentGenerator:
         print("------------------------------\n")
 
         return email_data
-
-    def __gender_correction(self):
-        return
-        #if self.data['gender'] == 'f':
-        #    return ''
-        #else:
-        #    return 'r'
-
-    def __get_lastname(self):
-        return
-        #return self.data['name'].split(' ')[-1]
 
     def __gender_helper(self):
         if(self.data['country'] == "Deutschland"):

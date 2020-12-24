@@ -4,26 +4,37 @@ from datetime import datetime, timedelta
 
 class CustomerSelector:
 
-    __log__ = logging.getLogger('holy-crm')
+    __log__ = logging.getLogger('holy_crm')
 
     def __init__(self, config, data):
         self.config = config
         self.data = data
 
-    def select_customer(self, criteria):
+    def select_customer(self):
+        # Preselect customer
         preselected_data = self.__preselect()
         final_selection = []
 
-        if criteria == []:
+        self.__log__.debug(F"Critieria loaded from config-file: {self.config.get('criteria')}") 
+        if self.config.get('criteria') is not None:
+            self.__log__.info('Selecting customer using criteria')
+            criteria = self.config.get('criteria', dict())
+        else:
+            self.__log__.info('No cirteria defined. Using all customer.')
             return preselected_data
 
+        # Criteria
+        #  First select by coutry
         country_selection = self.__select_by_country(preselected_data, criteria)
-        time_selection = self.__select_by_time(preselected_data, criteria)
+        #  Second select by last contact
+        final_selection = self.__select_by_time(country_selection, criteria)
 
-        for record in country_selection:
-            if record in country_selection and record in time_selection:
-                final_selection.append(record)
+        # Find records that match multiple 
+        #for record in country_selection:
+        #    if record in country_selection and record in time_selection:
+        #        final_selection.append(record)
 
+        # Document results after selection
         if len(final_selection) > 0:
             self.__log__.info(F"Found {len(final_selection)} customer from {criteria.get('country')}")
         else:
@@ -45,7 +56,7 @@ class CustomerSelector:
 
     def __select_by_country(self, data, criteria):
         selection = []
-        # Country selection:
+        # Country selection
         for country in criteria.get('country'):
             self.__log__.info(F"Finding customer from {country}")
             for record in data:
@@ -57,12 +68,18 @@ class CustomerSelector:
     def __select_by_time(self, data, criteria):
         selection = []
         for record in data:
+            # Customer that has never contacted before shall be contacted
             if not record['last_contact']:
-                print("[*] Time empty")
+                self.__log__.info(F"Customer {record['id']} was never contacted before.")
                 selection.append(record)
+            # Customer that has been contacted more than a defined time age shall be contacted
             elif (datetime.now() - timedelta(days=30)) > datetime.strptime(record['last_contact'], "%Y-%m-%d %H:%M:%S"):
+                self.__log__.info(F"Customer {record['id']} was contacted on {record['last_contact']}. " \
+                F"That\'s {datetime.now() - datetime.strptime(record['last_contact'], '%Y-%m-%d %H:%M:%S')} ago. It\'s time to send a new message.")
                 selection.append(record)
-                print(F"[*] daytime-now {datetime.now()}\n Now - 30 days {datetime.now() - timedelta(days=30)}\n {datetime.strptime(record['last_contact'], '%Y-%m-%d %H:%M:%S')}")
+            # Customer shall not be contacted, was contacted lately
+            else:
+                self.__log__.info(F"Customer {record['id']} was last contacted on {record['last_contact']}. Let\'s wait and don\'t spam.")
         return selection
 
 

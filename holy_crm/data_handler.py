@@ -31,13 +31,13 @@ class DataHandler:
     def save_data(self):
         file = self.__data_path + "/" + self.__output_filename  
         self.__log__.info('Saving data')
-        self.df.to_excel(self.__output_filename, index=False)
+        self.df.to_excel(file, index=False)
 
     def __convert_df_to_dict(self, df):
         return df.to_dict('records')
     
     def __correct_df(self, df):
-        # Fill nan to ''
+        # Fill Nan to ''
         return df.fillna('')
 
     def __import_data_to_df(self, xlsx_filename):
