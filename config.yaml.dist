@@ -1,28 +1,33 @@
 ---
 # Enable verbose mode (print DEBUG log messages) [true, false]
-verbose: false
+verbose: true
 
-# local is only supported until now
+# Supported mode: local
+# Remote mode is in development
 mode: local
-# input file shall be an excel document located in the data/ folder.
+
+# Use user interface
+#ui: true
+
+# input file shall be an xlsx excel document located in the data/ folder.
 input_filename: customer_list.xlsx
 
-# Enter your mailserver login inf
+# Enter your mailserver login info
 # ovh
-#mail:
-#    smtp_server: ns0.ovh.net
-#    smtp_port: 5025
-#    user_email: max@mueller.name
-#    user_pw:
-#    sender_name: Max Mueller
+mail:
+    smtp_server: ns0.ovh.net
+    smtp_port: 5025
+    user_email: 
+    user_pw: 
+    sender_name: 
 
 # gmail
 #mail:
 #    smtp_server: smtp.gmail.com
 #    smtp_port: 587
-#    user_email: maxmueller@gmail.com
+#    user_email:
 #    user_pw:
-#    sender_name: Max Mueller
+#    sender_name:
 
 # If no criteria shall be used leave <criteria> empty.
 #criteria:
@@ -30,14 +35,13 @@ input_filename: customer_list.xlsx
 #criteria:
 #  country:
 #    - Germany
-#    - Spain
 #    - Australia
-
 criteria:
   country:
     - Germany
+    - Australia
+    - Spain
 
-# Between sending it waits for <sleeping_time> seconds.
-#loop:
-#    active: yes
-#    sleeping_time: 600
+# Customer shall be contacted every <contact_intervall> days.
+# Customer shall be contacted every 30 days:
+contact_intervall: 30 

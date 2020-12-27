@@ -67,13 +67,14 @@ class CustomerSelector:
 
     def __select_by_time(self, data, criteria):
         selection = []
+        self.__log__.info(F"Customer shall be contacted every {self.config.get('contact_intervall')} days")
         for record in data:
             # Customer that has never contacted before shall be contacted
             if not record['last_contact']:
                 self.__log__.info(F"Customer {record['id']} was never contacted before.")
                 selection.append(record)
             # Customer that has been contacted more than a defined time age shall be contacted
-            elif (datetime.now() - timedelta(days=30)) > datetime.strptime(record['last_contact'], "%Y-%m-%d %H:%M:%S"):
+            elif (datetime.now() - timedelta(days=self.config.get('contact_intervall'))) > datetime.strptime(record['last_contact'], "%Y-%m-%d %H:%M:%S"):
                 self.__log__.info(F"Customer {record['id']} was contacted on {record['last_contact']}. " \
                 F"That\'s {datetime.now() - datetime.strptime(record['last_contact'], '%Y-%m-%d %H:%M:%S')} ago. It\'s time to send a new message.")
                 selection.append(record)
