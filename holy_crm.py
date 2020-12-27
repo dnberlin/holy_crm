@@ -5,10 +5,7 @@ import os
 from pprint import pformat
 
 from holy_crm.config import Config
-from holy_crm.data_handler import DataHandler
-from holy_crm.email_handler import EmailHandler
-from holy_crm.content_generator import ContentGenerator
-from holy_crm.customer_selector import CustomerSelector
+from holy_crm.crm_runner import CrmRunner
 
 # init logging
 if os.name == 'posix':
@@ -30,34 +27,13 @@ logging.basicConfig(
 __log__ = logging.getLogger('holy_crm')
 
 def launch_holy_crm(config):
-    # Initializing handler
-    __log__.debug('Initializing handler')
-    data_handler = DataHandler(config)
-    email_handler = EmailHandler(config)
-    customer_selector = CustomerSelector(config, data_handler.get_dict_data())
-
-    # Preselect customer
-    selected_customer = customer_selector.select_customer()
-    
-    # Process customer
-    for customer in selected_customer:
-        __log__.info(f"Processing Customer {customer['id']}")
-        __log__.debug(f"Preparing E-Mail content based on data {customer} ")
-        # Initialize content_generator for customer
-        content_generator = ContentGenerator(customer)
-        customer_email_data = content_generator.get_email_data()
-        # Prepare email
-        __log__.info(f"Need info! Send this E-Mail? (y/n)")
-        send = input("")
-        if send == "y":
-            # Send E-Mail
-            #email_handler.send_email(customer_email_data)
-            # Update customer timestamp
-            data_handler.update_entry(customer['id'])
-        else:
-            __log__.info(f"Skipping Customer {customer['id']}")
-        __log__.info(f"Customer {customer['id']} complete\n")
-    data_handler.save_data()
+    runner = CrmRunner(config)
+    if config.get('ui'):
+        __log__.info("Using user interface.")
+        runner.start_ui()
+    else:
+        __log__.info("Using shell.")
+        runner.start_shell()
 
 def main():
     print("""
