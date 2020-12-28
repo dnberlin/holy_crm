@@ -45,10 +45,10 @@ class CustomerSelector:
     def __preselect(self):
         selection = []
         for record in self.data:
-            if record['person_first_name'] and \
+            if (record['person_first_name'] and \
             record['person_last_name'] and \
-            record['person_email_address'] and \
-            record['company_name']:
+            (record['person_email'] or record['company_email']) and \
+            record['company_name']):
                 selection.append(record)
             else:
                 self.__log__.warning(F"Skipping customer {record['id']} due to missing email, first-, lastname or company name.")

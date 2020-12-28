@@ -29,7 +29,7 @@ class CrmRunner:
         # Process customer
         for customer in selected_customer:
             self.__log__.info(f"Processing Customer {customer['id']}")
-            self.__log__.debug(f"Preparing E-Mail content based on data {customer} ")
+            self.__log__.debug(f"Preparing E-Mail content based on data {customer}")
             # Initialize content_generator for customer
             content_generator = ContentGenerator(customer)
             customer_email_data = content_generator.get_email_data()
@@ -38,7 +38,7 @@ class CrmRunner:
             send = input("")
             if send == "y":
                 # Send E-Mail
-                #email_handler.send_email(customer_email_data)
+                email_handler.send_email(customer_email_data)
                 # Update customer timestamp
                 data_handler.update_entry(customer['id'])
             else:

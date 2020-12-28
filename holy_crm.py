@@ -64,7 +64,7 @@ def main():
         return
     if not config.get('mail', dict()).get('user_email') or not config.get('mail', dict()).get('user_pw'):
         __log__.error("No login for mailserver configured.")
-        return
+        returncustomer
     if not config.get('mail', dict()).get('sender_name'):
         __log__.error("No name of sender defined.")
         return

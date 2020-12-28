@@ -4,7 +4,6 @@ from datetime import datetime,  timedelta
 
 class DataHandler:
     __data_path = "data"
-    __output_filename = 'output.xlsx'
     __log__ = logging.getLogger('holy_crm')
 
     def __init__(self, config):
@@ -29,7 +28,7 @@ class DataHandler:
         self.__log__.debug(self.df.loc[id])
 
     def save_data(self):
-        file = self.__data_path + "/" + self.__output_filename  
+        file = self.__data_path + "/" + self.input_file  
         self.__log__.info('Saving data')
         self.df.to_excel(file, index=False)
 
