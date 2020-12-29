@@ -12,22 +12,15 @@ class CrmRunner:
 
     def __init__(self, config):
         self.config = config
+        self.__initialize()
 
     def start_ui(self):
         return
 
-    def start_shell(self):
-        # Initializing handler
-        self.__log__.debug('Initializing handler')
-        data_handler = DataHandler(self.config)
-        email_handler = EmailHandler(self.config)
-        customer_selector = CustomerSelector(self.config, data_handler.get_dict_data())
-
-        # Preselect customer
-        selected_customer = customer_selector.select_customer()
-        
+    def start_shell(self):   
         # Process customer
-        for customer in selected_customer:
+        customer = self.customer_selector.get_customer()
+        while customer:
             self.__log__.info(f"Processing Customer {customer['id']}")
             self.__log__.debug(f"Preparing E-Mail content based on data {customer}")
             # Initialize content_generator for customer
@@ -38,10 +31,21 @@ class CrmRunner:
             send = input("")
             if send == "y":
                 # Send E-Mail
-                email_handler.send_email(customer_email_data)
+                self.email_handler.send_email(customer_email_data)
                 # Update customer timestamp
-                data_handler.update_entry(customer['id'])
+                self.data_handler.update_entry(customer['id'])
             else:
                 self.__log__.info(f"Skipping Customer {customer['id']}")
             self.__log__.info(f"Customer {customer['id']} complete\n")
-        data_handler.save_data()
+            # Get next customer
+            customer = self.customer_selector.get_customer()
+        else:
+            # Save updated data
+            self.data_handler.save_data()
+
+    def __initialize(self):
+        self.__log__.debug('Initializing handler')
+        self.data_handler = DataHandler(self.config)
+        self.email_handler = EmailHandler(self.config)
+        self.customer_selector = CustomerSelector(self.config, self.data_handler.get_dict_data())
+

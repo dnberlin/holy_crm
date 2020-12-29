@@ -9,8 +9,15 @@ class CustomerSelector:
     def __init__(self, config, data):
         self.config = config
         self.data = data
+        self.selection = self.__select_customer()
 
-    def select_customer(self):
+    def get_customer(self):
+        if len(self.selection) > 0:
+            return self.selection.pop()
+        else:
+            return False
+
+    def __select_customer(self):
         # Preselect customer
         preselected_data = self.__preselect()
         final_selection = []
@@ -28,11 +35,6 @@ class CustomerSelector:
         country_selection = self.__select_by_country(preselected_data, criteria)
         #  Second select by last contact
         final_selection = self.__select_by_time(country_selection, criteria)
-
-        # Find records that match multiple 
-        #for record in country_selection:
-        #    if record in country_selection and record in time_selection:
-        #        final_selection.append(record)
 
         # Document results after selection
         if len(final_selection) > 0:
