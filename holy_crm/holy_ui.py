@@ -40,7 +40,7 @@ class mywindow(QtWidgets.QMainWindow):
         
         self.root_logger = logging.getLogger('holy_crm')
         self.root_logger.addHandler(self.log_hndle)
-        self.main_loop = ""
+        self.selfcontext = ""
         self.current_customer_mail_data = 0
     def start_main(self):
         self.setup_next_customer()
@@ -50,6 +50,8 @@ class mywindow(QtWidgets.QMainWindow):
             
             self.current_customer_mail_data['body'] = self.ui.cont_edit.toPlainText()
             self.current_customer_mail_data['subject'] = self.ui.sub_edit.toPlainText()
+            print(self.ui.sub_edit.toPlainText())
+            print(self.ui.cont_edit.toPlainText())
             self.sent_o_not(self.current_customer,self.current_customer_mail_data,True)
             self.setup_next_customer()
     def not_ok_customer(self):
@@ -75,7 +77,7 @@ class mywindow(QtWidgets.QMainWindow):
             self.ui.last_contact.setText("")
             self.current_customer_mail_data = 0
 class main_window():
-    def init_main(sent_or_not,next_customer):
+    def init_main(selfcontext,sent_or_not,next_customer):
         app = QtWidgets.QApplication([])
 
         app_window = mywindow()
@@ -83,6 +85,6 @@ class main_window():
         app_window.show()
         app_window.next_cust = next_customer
         app_window.sent_o_not = sent_or_not
-        
+        app_window.selfcontext = selfcontext
         app.exec()
         
