@@ -5,7 +5,7 @@ from holy_crm.data_handler import DataHandler
 from holy_crm.email_handler import EmailHandler
 from holy_crm.content_generator import ContentGenerator
 from holy_crm.customer_selector import CustomerSelector
-import holy_ui
+import holy_crm.holy_ui
 class CrmRunner:
 
     __log__ = logging.getLogger('holy-crm')

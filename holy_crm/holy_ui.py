@@ -1,6 +1,6 @@
 from PyQt5 import QtWidgets
 
-from ui.v013 import Ui_MainWindow  # importing our generated file
+from holy_crm.ui.v013 import Ui_MainWindow  # importing our generated file
 
 import logging
 
