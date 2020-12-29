@@ -73,7 +73,7 @@ class mywindow(QtWidgets.QMainWindow):
             self.ui.last_contact.setText("")
             self.current_customer_mail_data = 0
 class main_window():
-    def init_main(main_,next_customer,sent_or_not):
+    def init_main(next_customer,sent_or_not):
         app = QtWidgets.QApplication([])
 
         app_window = mywindow()

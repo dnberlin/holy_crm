@@ -32,6 +32,10 @@ class CrmRunner:
                 self.data_handler.update_entry(customer['id'])
         else:
                 self.__log__.info(f"Skipping Customer {customer['id']}")
+    def get_customer_complete():
+        customer = self.customer_selector.get_customer()
+        customer_email_data = ContentGenerator(customer).content_generator.get_email_data()
+        return [customer,customer_email_data]
     def __start_shell(self):
         # Process customer
         customer = self.customer_selector.get_customer()
