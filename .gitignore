@@ -3,4 +3,5 @@ data/*
 config.yaml
 __pycache__/*
 holy_crm/__pycache__/*
+holy_crm/ui/__pycache__/*
 .git

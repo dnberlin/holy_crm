@@ -56,13 +56,13 @@ def main():
     # check config
     if not config.get('mail', dict()).get('smtp_server') or not config.get('mail', dict()).get('smtp_port'):
         __log__.error("No mailserver configured. Starting like this would be pointless...")
-        return
+        #return
     if not config.get('mail', dict()).get('user_email') or not config.get('mail', dict()).get('user_pw'):
         __log__.error("No login for mailserver configured.")
-        returncustomer
+        #return
     if not config.get('mail', dict()).get('sender_name'):
         __log__.error("No name of sender defined.")
-        return
+        #return
 
     # adjust log level, if required
     if config.get('verbose'):
