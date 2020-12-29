@@ -74,11 +74,14 @@ class CustomerSelector:
             # Customer that has never contacted before shall be contacted
             if not record['last_contact']:
                 self.__log__.info(F"Customer {record['id']} was never contacted before.")
+                record['contact_string'] = F"Customer {record['id']} was never contacted before."
                 selection.append(record)
             # Customer that has been contacted more than a defined time age shall be contacted
             elif (datetime.now() - timedelta(days=self.config.get('contact_intervall'))) > datetime.strptime(record['last_contact'], "%Y-%m-%d %H:%M:%S"):
                 self.__log__.info(F"Customer {record['id']} was contacted on {record['last_contact']}. " \
                 F"That\'s {datetime.now() - datetime.strptime(record['last_contact'], '%Y-%m-%d %H:%M:%S')} ago. It\'s time to send a new message.")
+                record['contact_string'] = F"Customer {record['id']} was contacted on {record['last_contact']}. " \
+                F"That\'s {datetime.now() - datetime.strptime(record['last_contact'], '%Y-%m-%d %H:%M:%S')} ago."
                 selection.append(record)
             # Customer shall not be contacted, was contacted lately
             else:

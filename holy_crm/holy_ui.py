@@ -1,6 +1,6 @@
 from PyQt5 import QtWidgets
 
-from holy_crm.ui.v013 import Ui_MainWindow  # importing our generated file
+from holy_crm.ui.v014 import Ui_MainWindow  # importing our generated file
 
 import logging
 
@@ -68,8 +68,8 @@ class mywindow(QtWidgets.QMainWindow):
             self.ui.cont_edit.insertPlainText(self.current_customer_mail_data['body'])
             self.ui.sub_edit.clear()
             self.ui.sub_edit.insertPlainText(self.current_customer_mail_data['subject'])
-            #self.ui.recipient.setText(self.current_customer['recipient_email'])
-            #self.ui.last_contact.setText(self.current_customer['contact_string'])
+            self.ui.recipient.setText(self.current_customer_mail_data['recipient_email'])
+            self.ui.last_contact.setText(self.current_customer['contact_string'])
         else:
             self.ui.sub_edit.clear()
             self.ui.cont_edit.clear()

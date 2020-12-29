@@ -26,17 +26,21 @@ class CrmRunner:
         holy_crm.holy_ui.main_window.init_main(self._handle_customer_done,self.get_customer_complete)
     def _handle_customer_done(self,customer,customer_email_data,send_it):
         if send_it:
+                pass
                 # Send E-Mail
-                self.email_handler.send_email(customer_email_data)
+                #self.email_handler.send_email(customer_email_data)
                 # Update customer timestamp
-                self.data_handler.update_entry(customer['id'])
+                #self.data_handler.update_entry(customer['id'])
         else:
                 self.__log__.info(f"Skipping Customer {customer['id']}")
     def get_customer_complete(self):
         customer = self.customer_selector.get_customer()
-        content_generator = ContentGenerator(customer)
-        customer_email_data = content_generator.get_email_data()
-        return [customer,customer_email_data]
+        if customer:
+            content_generator = ContentGenerator(customer)
+            customer_email_data = content_generator.get_email_data()
+            return [customer,customer_email_data]
+        else:
+            return customer
     def __start_shell(self):
         # Process customer
         customer = self.customer_selector.get_customer()
