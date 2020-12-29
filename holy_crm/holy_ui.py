@@ -48,8 +48,8 @@ class mywindow(QtWidgets.QMainWindow):
     def ok_customer(self):
         if self.current_customer_mail_data != 0:
             
-            self.current_customer_mail_data['body'] = self.ui.cont_edit.getText()
-            self.current_customer_mail_data['subject'] = self.ui.sub_edit.getText()
+            self.current_customer_mail_data['body'] = self.ui.cont_edit.toPlainText()
+            self.current_customer_mail_data['subject'] = self.ui.sub_edit.toPlainText()
             self.sent_o_not(self.current_customer,self.current_customer_mail_data,True)
             self.setup_next_customer()
     def not_ok_customer(self):
