@@ -24,7 +24,7 @@ class CrmRunner:
 
     def __start_ui(self):
         holy_crm.holy_ui.main_window.init_main(self._handle_customer_done,self.get_customer_complete)
-    def _handle_customer_done(customer,customer_email_data,send_it):
+    def _handle_customer_done(self,customer,customer_email_data,send_it):
         if send_it:
                 # Send E-Mail
                 self.email_handler.send_email(customer_email_data)

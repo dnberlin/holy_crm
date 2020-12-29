@@ -52,11 +52,11 @@ class mywindow(QtWidgets.QMainWindow):
             self.current_customer_mail_data['subject'] = self.ui.sub_edit.toPlainText()
             print(self.ui.sub_edit.toPlainText())
             print(self.ui.cont_edit.toPlainText())
-            self.sent_o_not(self.selfcontext,self.current_customer,self.current_customer_mail_data,True)
+            self.sent_o_not(self.current_customer,self.current_customer_mail_data,True)
             self.setup_next_customer()
     def not_ok_customer(self):
         if self.current_customer_mail_data != 0:
-            self.sent_o_not(self.selfcontext,self.current_customer,self.current_customer_mail_data,False)
+            self.sent_o_not(self.current_customer,self.current_customer_mail_data,False)
             self.setup_next_customer()
     def setup_next_customer(self):
         mail_and_cust = self.next_cust()
