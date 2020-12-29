@@ -28,12 +28,7 @@ __log__ = logging.getLogger('holy_crm')
 
 def launch_holy_crm(config):
     runner = CrmRunner(config)
-    if config.get('ui'):
-        __log__.info("Using user interface.")
-        runner.start_ui()
-    else:
-        __log__.info("Using shell.")
-        runner.start_shell()
+    runner.start()
 
 def main():
     print("""

@@ -14,10 +14,19 @@ class CrmRunner:
         self.config = config
         self.__initialize()
 
-    def start_ui(self):
+    def start(self):
+        if self.config.get('ui'):
+            self.__log__.info("Using user interface.")
+            self.__start_ui()
+        else:
+            self.__log__.info("Using shell.")
+            self.__start_shell()
+
+    def __start_ui(self):
+        # Implement ui logic here.
         return
 
-    def start_shell(self):   
+    def __start_shell(self):
         # Process customer
         customer = self.customer_selector.get_customer()
         while customer:
