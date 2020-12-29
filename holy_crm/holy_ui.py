@@ -8,6 +8,7 @@ import logging
 
 import sys
 
+# Not needed anymore.
 class log_to_text_edit(logging.Handler):
     def emit(self, record):
         s = self.format(record) + '\n'
@@ -16,7 +17,6 @@ class log_to_text_edit(logging.Handler):
     def __init__ (self, to):
         logging.Handler.__init__(self)
         self.console_out = to
-
 
 
 class mywindow(QtWidgets.QMainWindow):
@@ -38,9 +38,9 @@ class mywindow(QtWidgets.QMainWindow):
         self.ui.console_out.centerOnScroll()
         self.log_hndle = log_to_text_edit(self.ui.console_out)
         
-        self.root_logger = logging.getLogger('holy_crm')
-        self.root_logger.addHandler(self.log_hndle)
-        self.selfcontext = ""
+        #self.root_logger = logging.getLogger('holy_crm')
+        #self.root_logger.addHandler(self.log_hndle)
+        #self.selfcontext = ""
         self.current_customer_mail_data = 0
     def start_main(self):
         self.setup_next_customer()
@@ -50,8 +50,8 @@ class mywindow(QtWidgets.QMainWindow):
             
             self.current_customer_mail_data['body'] = self.ui.cont_edit.toPlainText()
             self.current_customer_mail_data['subject'] = self.ui.sub_edit.toPlainText()
-            print(self.ui.sub_edit.toPlainText())
-            print(self.ui.cont_edit.toPlainText())
+            #print(self.ui.sub_edit.toPlainText())
+            #print(self.ui.cont_edit.toPlainText())
             self.sent_o_not(self.current_customer,self.current_customer_mail_data,True)
             self.setup_next_customer()
     def not_ok_customer(self):
@@ -76,8 +76,11 @@ class mywindow(QtWidgets.QMainWindow):
             self.ui.recipient.setText("")
             self.ui.last_contact.setText("")
             self.current_customer_mail_data = 0
+            self.safe_data()
+                     
+
 class main_window():
-    def init_main(sent_or_not,next_customer):
+    def init_main(sent_or_not,next_customer, safe_data):
         app = QtWidgets.QApplication([])
 
         app_window = mywindow()
@@ -85,5 +88,6 @@ class main_window():
         app_window.show()
         app_window.next_cust = next_customer
         app_window.sent_o_not = sent_or_not
+        app_window.safe_data = safe_data
         app.exec()
         

@@ -23,16 +23,8 @@ class CrmRunner:
             self.__start_shell()
 
     def __start_ui(self):
-        holy_crm.holy_ui.main_window.init_main(self._handle_customer_done,self.get_customer_complete)
-    def _handle_customer_done(self,customer,customer_email_data,send_it):
-        if send_it:
-                pass
-                # Send E-Mail
-                #self.email_handler.send_email(customer_email_data)
-                # Update customer timestamp
-                #self.data_handler.update_entry(customer['id'])
-        else:
-                self.__log__.info(f"Skipping Customer {customer['id']}")
+        holy_crm.holy_ui.main_window.init_main(self.__handle_customer_done,self.get_customer_complete, self.__safe_data)
+
     def get_customer_complete(self):
         customer = self.customer_selector.get_customer()
         if customer:
@@ -41,6 +33,7 @@ class CrmRunner:
             return [customer,customer_email_data]
         else:
             return customer
+
     def __start_shell(self):
         # Process customer
         customer = self.customer_selector.get_customer()
@@ -54,18 +47,27 @@ class CrmRunner:
             self.__log__.info(f"Need info! Send this E-Mail? (y/n)")
             send = input("")
             if send == "y":
-                # Send E-Mail
-                self.email_handler.send_email(customer_email_data)
-                # Update customer timestamp
-                self.data_handler.update_entry(customer['id'])
+                self.__handle_customer_done(customer, customer_email_data, True)
             else:
-                self.__log__.info(f"Skipping Customer {customer['id']}")
+                self.__handle_customer_done(customer, customer_email_data, False)
             self.__log__.info(f"Customer {customer['id']} complete\n")
             # Get next customer
             customer = self.customer_selector.get_customer()
         else:
-            # Save updated data
-            self.data_handler.save_data()
+            self.__safe_data()
+
+    def __handle_customer_done(self, customer, customer_email_data, send_it):
+        if send_it:
+            # Send E-Mail
+            self.email_handler.send_email(customer_email_data)
+            # Update customer timestamp
+            self.data_handler.update_entry(customer['id'])
+        else:
+            self.__log__.info(f"Skipping Customer {customer['id']}")
+
+    def __safe_data(self):
+        # Save updated data
+        self.data_handler.save_data()
 
     def __initialize(self):
         self.__log__.debug('Initializing handler')
