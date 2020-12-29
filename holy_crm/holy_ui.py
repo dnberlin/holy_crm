@@ -79,7 +79,6 @@ class main_window():
         app_window = mywindow()
         
         app_window.show()
-        app_window.main_loop = main_
         app_window.next_cust = next_customer
         app_window.sent_o_not = sent_or_not
         
