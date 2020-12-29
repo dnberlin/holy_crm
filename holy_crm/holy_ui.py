@@ -48,18 +48,21 @@ class mywindow(QtWidgets.QMainWindow):
         #holy.launch_holy_crm(conf)
     def ok_customer(self):
         if self.current_customer_mail_data != 0:
-            self.sent_o_not(1)
+            
+            self.current_customer_mail_data['body'] = self.ui.cont_edit.getText()
+            self.current_customer_mail_data['subject'] = self.ui.sub_edit.getText()
+            self.sent_o_not(self.current_customer,self.current_customer_mail_data,True)
             self.setup_next_customer()
     def not_ok_customer(self):
         if self.current_customer_mail_data != 0:
-            self.sent_o_not(0)
+            self.sent_o_not(self.current_customer,self.current_customer_mail_data,False)
             self.setup_next_customer()
     def setup_next_customer(self):
         mail_and_cust = self.next_cust()
         
-        if mail_and_cust != 0:
-            self.current_customer_mail_data = mail_and_cust[0]
-            self.current_customer = mail_and_cust[1]
+        if mail_and_cust != False:
+            self.current_customer_mail_data = mail_and_cust[1]
+            self.current_customer = mail_and_cust[2]
             self.ui.cont_edit.clear()
             self.ui.cont_edit.insertPlainText(self.current_customer_mail_data['body'])
             self.ui.sub_edit.clear()
@@ -73,7 +76,7 @@ class mywindow(QtWidgets.QMainWindow):
             self.ui.last_contact.setText("")
             self.current_customer_mail_data = 0
 class main_window():
-    def init_main(next_customer,sent_or_not):
+    def init_main(sent_or_not,next_customer):
         app = QtWidgets.QApplication([])
 
         app_window = mywindow()
