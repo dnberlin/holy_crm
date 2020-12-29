@@ -23,8 +23,8 @@ class CrmRunner:
             self.__start_shell()
 
     def __start_ui(self):
-        holy_ui.main_window.init_main(self._handle_customer_done,self.get_customer_complete)
-    def _handle_customer_done(customer,customer_email_data,send_it):
+        holy_crm.holy_ui.main_window.init_main(self._handle_customer_done,self.get_customer_complete)
+    def _handle_customer_done(self,customer,customer_email_data,send_it):
         if send_it:
                 # Send E-Mail
                 self.email_handler.send_email(customer_email_data)
@@ -32,9 +32,10 @@ class CrmRunner:
                 self.data_handler.update_entry(customer['id'])
         else:
                 self.__log__.info(f"Skipping Customer {customer['id']}")
-    def get_customer_complete():
+    def get_customer_complete(self):
         customer = self.customer_selector.get_customer()
-        customer_email_data = ContentGenerator(customer).content_generator.get_email_data()
+        content_generator = ContentGenerator(customer)
+        customer_email_data = content_generator.get_email_data()
         return [customer,customer_email_data]
     def __start_shell(self):
         # Process customer

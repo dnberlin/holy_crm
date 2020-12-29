@@ -43,7 +43,6 @@ class mywindow(QtWidgets.QMainWindow):
         self.main_loop = ""
         self.current_customer_mail_data = 0
     def start_main(self):
-        self.main_loop()
         self.setup_next_customer()
         #holy.launch_holy_crm(conf)
     def ok_customer(self):
@@ -62,13 +61,13 @@ class mywindow(QtWidgets.QMainWindow):
         
         if mail_and_cust != False:
             self.current_customer_mail_data = mail_and_cust[1]
-            self.current_customer = mail_and_cust[2]
+            self.current_customer = mail_and_cust[0]
             self.ui.cont_edit.clear()
             self.ui.cont_edit.insertPlainText(self.current_customer_mail_data['body'])
             self.ui.sub_edit.clear()
             self.ui.sub_edit.insertPlainText(self.current_customer_mail_data['subject'])
-            self.ui.recipient.setText(self.current_customer_mail_data['send_mail_to'])
-            self.ui.last_contact.setText(self.current_customer['contact_string'])
+            #self.ui.recipient.setText(self.current_customer['recipient_email'])
+            #self.ui.last_contact.setText(self.current_customer['contact_string'])
         else:
             self.ui.sub_edit.clear()
             self.ui.cont_edit.clear()
