@@ -5,7 +5,7 @@ from holy_crm.data_handler import DataHandler
 from holy_crm.email_handler import EmailHandler
 from holy_crm.content_generator import ContentGenerator
 from holy_crm.customer_selector import CustomerSelector
-
+import holy_ui
 class CrmRunner:
 
     __log__ = logging.getLogger('holy-crm')
@@ -23,9 +23,15 @@ class CrmRunner:
             self.__start_shell()
 
     def __start_ui(self):
-        # Implement ui logic here.
-        return
-
+        #holy_ui.main_window.init_main(self.customer_selector,
+    def _handle_customer_done(customer,customer_email_data,send_it):
+        if send_it:
+                # Send E-Mail
+                self.email_handler.send_email(customer_email_data)
+                # Update customer timestamp
+                self.data_handler.update_entry(customer['id'])
+        else:
+                self.__log__.info(f"Skipping Customer {customer['id']}")
     def __start_shell(self):
         # Process customer
         customer = self.customer_selector.get_customer()
