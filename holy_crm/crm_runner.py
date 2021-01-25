@@ -50,7 +50,7 @@ class CrmRunner:
                 self.__handle_customer_done(customer, customer_email_data, True)
             else:
                 self.__handle_customer_done(customer, customer_email_data, False)
-            self.__log__.info(f"Customer {customer['id']} complete\n")
+            self.__log__.info(f"Customer {customer['id']} complete")
             # Get next customer
             customer = self.customer_selector.get_customer()
         else:

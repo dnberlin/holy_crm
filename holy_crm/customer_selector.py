@@ -30,17 +30,15 @@ class CustomerSelector:
             self.__log__.info('No cirteria defined. Using all customer.')
             return preselected_data
 
-        # Criteria
-        #  First select by coutry
-        country_selection = self.__select_by_country(preselected_data, criteria)
-        #  Second select by last contact
-        final_selection = self.__select_by_time(country_selection, criteria)
+        # Select by language and company type
+        language_type_selection = self.__select_by_language_type(preselected_data, criteria)
+        final_selection = self.__select_by_time(language_type_selection, criteria)
 
         # Document results after selection
         if len(final_selection) > 0:
-            self.__log__.info(F"Found {len(final_selection)} customer from {criteria.get('country')}")
+        	self.__log__.info(F"Found {len(final_selection)} companies with type {criteria.get('company_type')} speaking {criteria.get('language')} ")
         else:
-            self.__log__.warning(F"No customer found for selection country = {criteria.get('country')}. Please specify different criteria.")
+            self.__log__.warning(F"No company found for selection type = {criteria.get('company_type')} and language = {criteria.get('language')}. Please specify different criteria.")
         
         return final_selection
 
@@ -50,10 +48,11 @@ class CustomerSelector:
             if (record['person_first_name'] and \
             record['person_last_name'] and \
             (record['person_email'] or record['company_email']) and \
-            record['company_name']):
+            record['company_name'] and \
+            record['person_language']):
                 selection.append(record)
             else:
-                self.__log__.warning(F"Skipping customer {record['id']} due to missing email, first-, lastname or company name.")
+                self.__log__.warning(F"Skipping customer {record['id']} due to missing language, email, first-, lastname or company name.")
         return selection
 
     def __select_by_country(self, data, criteria):
@@ -66,6 +65,18 @@ class CustomerSelector:
                     selection.append(record)
         return selection
 
+    def __select_by_language_type(self, data, criteria):
+        selection = []
+        company_type = criteria.get('company_type')
+        self.__log__.info(F"Finding customer by company_type: {company_type}")
+        # Language/ topic selection 
+        for language in criteria.get('language'):
+            self.__log__.info(F"Finding customer speaking {language}")
+            for record in data:
+                #self.__log__.info(F" Record spreaks {record['person_language']} has topic {record['company_type']}.")
+                if record['person_language'].strip() == language and record['company_type'].strip() == company_type:
+                    selection.append(record)
+        return selection
 
     def __select_by_time(self, data, criteria):
         selection = []

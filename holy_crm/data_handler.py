@@ -23,9 +23,9 @@ class DataHandler:
     def update_entry(self, id):
         self.__log__.debug(F'Updating Customer {id}')
         now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        self.__log__.debug("\n\n" + str(now))
+        #self.__log__.debug("\n\n" + str(now))
         self.df.at[id, 'last_contact'] = now
-        self.__log__.debug(self.df.loc[id])
+        #self.__log__.debug(self.df.loc[id])
 
     def save_data(self):
         file = self.__data_path + "/" + self.input_file  

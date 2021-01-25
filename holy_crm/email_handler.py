@@ -32,17 +32,17 @@ class EmailHandler:
         print(f"Subject: {data['subject']}")
         print(f"Body: {data['body']}")
 
-        msg = MIMEMultipart()
+        msg = MIMEMultipart('alternative')
         msg['Subject'] = data['subject']
         msg['From'] = self.sender_name + ' <' + self.user_email + '>' 
         msg['To'] = data['recipient_name'] + ' <' + data['recipient_email'] + '>'
-        message = data['body']
-        msg.attach(MIMEText(message))
+        #msg['To'] = "Felix Werner <fw@felixwerner.name>"
+        plain_msg = data['plain_body']
+        html_msg = data['body']
 
-        # Attach file
-        if attachment_path != None:
-            print('Attachment mode activated:')
-            msg = self.__attach_file(msg, attachment_path)
+
+        msg.attach(MIMEText(plain_msg, 'plain'))
+        msg.attach(MIMEText(html_msg, 'html'))
 
         mailserver = self.__establish_connection()
 
@@ -51,31 +51,6 @@ class EmailHandler:
         time.sleep(5)
         
         mailserver.quit()
-
-    def __attach_file(self, msg, attachment_path):
-        # open the file to be sent  
-        filename = attachment_path.split('/')[-1]
-        # Filename modifications
-        #filename_modified = 'Felix_Werner_Mietervorstellung.pdf'
-        filename_modified = filename.split('gen_')[-1]
-        print(f" Attaching file: {filename}. Source: {attachment_path} \n")
-        attachment = open(attachment_path, "rb") 
-  
-        # instance of MIMEBase and named as p 
-        p = MIMEBase('application', 'octet-stream') 
-          
-        # To change the payload into encoded form 
-        p.set_payload((attachment).read()) 
-          
-        # encode into base64 
-        encoders.encode_base64(p) 
-           
-        p.add_header('Content-Disposition', "attachment; filename= %s" % filename_modified) 
-          
-        # attach the instance 'p' to instance 'msg' 
-        msg.attach(p) 
-        
-        return msg
 
     def __establish_connection(self):
         mailserver = smtplib.SMTP(self.smtp_server ,self.smtp_port)
